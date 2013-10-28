@@ -8,22 +8,23 @@ module Test # :nodoc:
         # invoke the specified API method
         def invoke_direct(method_name, *args)
           prepare_request('api', 'api', method_name, *args)
-          @controller.process(@request, @response)
+          @controller.dispatch('api', @request, @response)
           decode_rpc_response
         end
         alias_method :invoke, :invoke_direct
 
         # invoke the specified API method on the specified service
         def invoke_delegated(service_name, method_name, *args)
-          prepare_request(service_name.to_s, service_name, method_name, *args)
-          @controller.process(@request, @response)
+          prepare_request('api', service_name, method_name, *args)
+          @controller.process(method_name, @request, @response)
           decode_rpc_response
         end
 
         # invoke the specified layered API method on the correct service
         def invoke_layered(service_name, method_name, *args)
-          prepare_request('api', service_name, method_name, *args)
-          @controller.process(@request, @response)
+          prepare_request(service_name.to_s, service_name, method_name, *args)
+          @controller.request = @request
+          @controller.process(method_name, @request, @response)
           decode_rpc_response
         end
 

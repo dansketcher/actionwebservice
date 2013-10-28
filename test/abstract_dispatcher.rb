@@ -524,7 +524,8 @@ module DispatcherCommonTests
       ap_request = protocol.encode_action_pack_request(service_name, public_method_name, body, :request_class => ActionController::TestRequest)
       ap_request.env.update(request_env)
       ap_response = ActionController::TestResponse.new
-      container.process(ap_request, ap_response)
+      container.request = ap_request
+      container.process('api', ap_request, ap_response)
       # puts ap_response.body
       @response_body = ap_response.body
       public_method_name, return_value = protocol.decode_response(ap_response.body)

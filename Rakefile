@@ -1,9 +1,8 @@
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
-require 'rake/packagetask'
-require 'rake/gempackagetask'
+require 'rdoc/task'
+require 'rubygems/package_task'
 require 'rake/contrib/rubyforgepublisher'
 require 'fileutils'
 require File.join(File.dirname(__FILE__), 'lib', 'action_web_service', 'version')
@@ -20,7 +19,7 @@ RUBY_FORGE_PROJECT = ""
 RUBY_FORGE_USER    = ""
 
 desc "Default Task"
-task :default => [ :test ]
+task :default => [:build_sqlite3_database, :test ]
 
 
 # Run the unit tests
@@ -82,9 +81,9 @@ spec = Gem::Specification.new do |s|
   s.email = "rubyjedi@gmail.com, bitserf@gmail.com, ksibilev@yahoo.com"
   s.homepage = "http://wiki.github.com/rubyjedi/actionwebservice/"
 
-  s.add_dependency('activesupport', '~> 2.3.0')
-  s.add_dependency('actionpack',    '~> 2.3.0')
-  s.add_dependency('activerecord',  '~> 2.3.0')
+  s.add_dependency('activesupport', '~> 3.2.0')
+  s.add_dependency('actionpack',    '~> 3.2.0')
+  s.add_dependency('activerecord',  '~> 3.2.0')
 
   s.has_rdoc = true
   s.requirements << 'none'
@@ -97,11 +96,11 @@ spec = Gem::Specification.new do |s|
   s.files = s.files + Dir.glob( "test/**/*" ).delete_if { |item| item.match( /\.(svn|git)/ ) }
   s.files = s.files + Dir.glob( "generators/**/*" ).delete_if { |item| item.match( /\.(svn|git)/ ) }
 end
-Rake::GemPackageTask.new(spec) do |p|
-  p.gem_spec = spec
-  p.need_tar = true
-  p.need_zip = true
-end
+# Rake::GemPackageTask.new(spec) do |p|
+#   p.gem_spec = spec
+#   p.need_tar = true
+#   p.need_zip = true
+# end
 
 
 ## Publish beta gem

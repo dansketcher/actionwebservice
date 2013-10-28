@@ -28,13 +28,19 @@ begin
   require 'actioncontroller'
   require 'activerecord'
   require 'actionpack'
-  require 'active_support/core_ext/class/inheritable_attributes'
+  require 'active_support/core_ext/class/attribute'
   require 'action_dispatch/routing'
 rescue LoadError
   require 'rubygems'
-  gem 'activesupport', '>=3.0.5'
-  gem 'actionpack'   , '>=3.0.5'
-  gem 'activerecord' , '>=3.0.5'
+  gem 'activesupport', '>=3.1.0'
+  gem 'actionpack'   , '>=3.1.0'
+  gem 'activerecord' , '>=3.1.0'
+  require 'active_support'
+  require 'action_pack'
+  require 'action_dispatch'
+  require 'action_dispatch/routing'
+  require 'action_controller'
+  require 'active_record'
 end
 
 $:.unshift(File.dirname(__FILE__) + "/action_web_service/vendor/")

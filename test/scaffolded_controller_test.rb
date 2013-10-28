@@ -1,10 +1,10 @@
 # encoding: UTF-8
 require 'abstract_unit'
 
-ActionController::Routing::Routes.draw do |map|
-  map.connect '', :controller => 'scaffolded'
-  map.connect ':controller/:action/:id'
-end
+# Application.routes.draw do
+#   match '', :controller => 'scaffolded'
+#   match ':controller/:action/:id'
+# end
 
 ActionController::Base.view_paths = [ '.' ]
 

@@ -7,6 +7,10 @@ module ActionWebService # :nodoc:
     def self.included(base) # :nodoc:
       base.extend(ClassMethods)
       base.send(:include, ActionWebService::Invocation::InstanceMethods)
+      base.class_attribute :before_invocation_interceptors_val
+      base.class_attribute :after_invocation_interceptors_val
+      base.class_attribute :included_intercepted_methods_val
+      base.class_attribute :excluded_intercepted_methods_val
     end
 
     # Invocation interceptors provide a means to execute custom code before
@@ -82,29 +86,42 @@ module ActionWebService # :nodoc:
       alias :after_invocation :append_after_invocation
 
       def before_invocation_interceptors # :nodoc:
-        read_inheritable_attribute("before_invocation_interceptors")
+        self.before_invocation_interceptors_val
+      end
+      def before_invocation_interceptors=(val)
+        self.before_invocation_interceptors_val = val
       end
 
       def after_invocation_interceptors # :nodoc:
-        read_inheritable_attribute("after_invocation_interceptors")
+        self.after_invocation_interceptors_val
+      end
+      def after_invocation_interceptors_val=(val)
+        self.after_invocation_interceptors_val = val
       end
 
       def included_intercepted_methods # :nodoc:
-        read_inheritable_attribute("included_intercepted_methods") || {}
+        self.included_intercepted_methods_val || {}
+      end
+      def included_intercepted_methods=(val) # :nodoc:
+        self.included_intercepted_methods_val = val
       end
       
       def excluded_intercepted_methods # :nodoc:
-        read_inheritable_attribute("excluded_intercepted_methods") || {}
+        self.excluded_intercepted_methods_val || {}
+      end
+      def excluded_intercepted_methods=(val) # :nodoc:
+        self.excluded_intercepted_methods_val = val
       end
 
       private
         def append_interceptors_to_chain(condition, interceptors)
-          write_inheritable_array("#{condition}_invocation_interceptors", interceptors)
+          current_val = self.send("#{condition}_invocation_interceptors_val") || []
+          self.send("#{condition}_invocation_interceptors_val=", current_val + interceptors)
         end
 
         def prepend_interceptors_to_chain(condition, interceptors)
-          interceptors = interceptors + read_inheritable_attribute("#{condition}_invocation_interceptors")
-          write_inheritable_attribute("#{condition}_invocation_interceptors", interceptors)
+          current_val = self.send("#{condition}_invocation_interceptors_val") || []
+          self.send("#{condition}_invocation_interceptors_val=", interceptors + current_val)
         end
 
         def extract_conditions!(interceptors)
@@ -115,8 +132,8 @@ module ActionWebService # :nodoc:
         def add_interception_conditions(interceptors, conditions)
           return unless conditions
           included, excluded = conditions[:only], conditions[:except]
-          write_inheritable_hash("included_intercepted_methods", condition_hash(interceptors, included)) && return if included
-          write_inheritable_hash("excluded_intercepted_methods", condition_hash(interceptors, excluded)) if excluded
+          self.included_intercepted_methods_val = (self.included_intercepted_methods_val || {}).merge(condition_hash(interceptors, included)) && return if included
+          self.excluded_intercepted_methods_val = (self.excluded_intercepted_methods_val || {}).merge(condition_hash(interceptors, excluded)) if excluded
         end
 
         def condition_hash(interceptors, *methods)

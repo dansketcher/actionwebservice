@@ -100,7 +100,7 @@ module InvocationTest
       end
   
       def intercept_only(name, args)
-        raise "Interception error" unless name == :only_one || name == :only_two
+        raise "Interception error on name #{name.inspect}" unless name == :only_one || name == :only_two
         @only_invoked = name
       end
   end
