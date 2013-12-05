@@ -34,11 +34,11 @@ module ActionWebService # :nodoc:
           if params.is_a?(Array)
               api_method.expects.zip(params).map{ |type, param| cast(param, type) }
           elsif params.is_a?(Hash)
-              api_method.expects.map do |type|
-                val = params[type.name.to_s]
-                val ||= params[type.name.to_s.camelize]
-                cast(val, type)
-              end
+            api_method.expects.map do |type|
+              val = params[type.name.to_s]
+              val = params[type.name.to_s.camelize] if val.nil? and params.has_key?(type.name.to_s.camelize)
+              cast(val, type)
+            end
           end
         end
 
