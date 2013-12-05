@@ -1,10 +1,40 @@
 # encoding: UTF-8
 require 'abstract_unit'
+# Only the parts of rails we want to use
+# if you want everything, use "rails/all"
+  require 'active_support'
+  require 'action_pack'
+  require 'action_dispatch'
+  require 'action_dispatch/routing'
+  require 'action_controller'
+  require 'active_record'
+require "action_controller/railtie"
+require "rails/test_unit/railtie"
+require 'rails/test_help'
 
-# Application.routes.draw do
-#   match '', :controller => 'scaffolded'
-#   match ':controller/:action/:id'
-# end
+root = File.expand_path(File.dirname(__FILE__))
+
+module Scaff
+  class Application < ::Rails::Application
+    # configuration here if needed
+    config.active_support.deprecation = :stderr
+  end
+end
+# Initialize the application
+Scaff::Application.routes.draw do
+  match '', :controller => 'scaffolded', :action => 'invoke'
+  match ':controller/:action/:id'
+  match ':controller/:action', :service => nil, :method => nil
+end
+Scaff::Application.initialize!
+
+# all_routes = Scaff::Application.routes.routes
+# puts "all_routes #{all_routes.inspect}"
+# require 'rails/application/route_inspector'
+# inspector = Rails::Application::RouteInspector.new
+# puts inspector.format(all_routes, ENV['CONTROLLER']).join "\n"
+
+
 
 ActionController::Base.view_paths = [ '.' ]
 
@@ -67,11 +97,11 @@ class ScaffoldedController < ActionController::Base
 end
 
 class ScaffoldedControllerTest < ActionController::TestCase
-  # def setup
-  #   @controller = ScaffoldedController.new
-  #   @request    = ActionController::TestRequest.new
-  #   @response   = ActionController::TestResponse.new
-  # end
+  def setup
+    @controller = ScaffoldedController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+  end
 
   def test_scaffold_invoke
     get :scaffold_invoke
